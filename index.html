@@ -1,1 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇美醫院公共空間申請系統 - 申請單</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
+        
+        /* 表單區塊標題樣式 (使用 class 或其他標籤取代 ##) */
+        .section-title {
+            position: relative; font-size: 1.125rem; font-weight: 600; color: #1f2937; padding-left: 1.5rem; margin-bottom: 1rem; margin-top: 1.5rem;
+        }
+        .section-title::before {
+            content: '■'; position: absolute; left: 0; top: 50%; transform: translateY(-50%); color: #3b82f6; 
+            font-size: 1.25rem;
+        }
+        
+        /* 輔助輸入框樣式 */
+        .custom-input {
+            width: 100%; max-width: 6rem; padding: 0.25rem 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-right: 0.25rem; margin-left: 0.25rem;
+        }
+        .input-text-style {
+            transition: all 0.15s ease-in-out;
+            background-color: #f8fafc;
+            color: #475569;
+        }
+        .input-text-style:focus {
+             background-color: white; 
+             border-color: #3b82f6; 
+        }
+        
+        /* 地點細節輸入框樣式 */
+        .location-detail-input {
+            display: none;
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem;
+            background-color: #f9fafb;
+        }
+        
+        /* 頁籤連結樣式 */
+        .tab-link {
+            transition: color 0.15s, border-color 0.15s;
+            color: #6b7280; 
+            padding: 0.5rem 1rem;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-link.active {
+            color: #3b82f6; 
+            border-color: #3b82f6; 
+            font-weight: 600;
+        }
+        .tab-link:not(.active):hover {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 sm:p-8">
 
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        
+        <nav class="bg-white border-b border-gray-200 py-2 flex justify-start space-x-6 text-base px-6">
+            <a href="#" data-tab="apply" class="tab-link active">申請單</a>
+            <a href="#" data-tab="search" class="tab-link">查詢申請狀態</a>
+            <a href="#" data-tab="admin" class="tab-link">管理後台</a>
+        </nav>
+
+        <header class="p-6 sm:p-8 bg-blue-600 text-white">
+            <h1 class="text-2xl sm:text-3xl font-bold">奇美醫院公共空間申請單</h1>
+            <p class="mt-1 text-sm opacity-90">請詳實填寫以下資訊，所有標註 <span class="text-red-300">*</span> 的欄位皆為必填項目。</p>
+        </header>
+        
+        <main>
+            <div id="tab-content-apply" class="tab-content p-6 sm:p-8 space-y-8">
+                <form id="rentalForm">
+                    <p class="section-title">基本資料</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">院區 <span class="text-red-500">*</span></label>
+                            <div class="flex flex-wrap gap-4 text-gray-700">
+                                <label class="flex items-center space-x-2"><input type="radio" name="branch" value="總院" required class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span>總院</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="branch" value="柳營院區" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span>柳營院區</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="branch" value="佳里院區" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span>佳里院區</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="branch" value="樹林院區" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span>樹林院區</span></label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="applicantName" class="block text-sm font-medium text-gray-700">申請人 <span class="text-red-500">*</span></label>
+                            <input type="text" id="applicantName" name="applicantName" placeholder="請填寫您的姓名" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                        </div>
+                        
+                        <div>
+                            <label for="applicantDept" class="block text-sm font-medium text-gray-700">部門 <span class="text-red-500">*</span></label>
+                            <input type="text" id="applicantDept" name="applicantDept" placeholder="請填寫您的部門名稱" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="extension" class="block text-sm font-medium text-gray-700">聯絡分機 <span class="text-red-500">*</span></label>
+                            <input type="tel" id="extension" name="extension" placeholder="請填寫聯絡分機" required class="mt-1 block w-full md:max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-6">
+                    
+                    <p class="section-title">活動/佈置詳情</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                        
+                        <div class="md:col-span-2">
+                            <label for="activityName" class="block text-sm font-medium text-gray-700">活動/申請名稱 <span class="text-red-500">*</span></label>
+                            <input type="text" id="activityName" name="activityName" placeholder="請填寫活動或申請佈置的完整名稱" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                        </div>
+                        
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-gray-700">活動開始日期 <span class="text-red-500">*</span></label>
+                            <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                        </div>
+                         <div>
+                            <label for="endDate" class="block text-sm font-medium text-gray-700">活動結束日期 <span class="text-red-500">*</span></label>
+                            <input type="date" id="endDate" name="endDate" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">放置樣式 <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-gray-700">
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="靜態展示" required class="setup-radio h-4 w-4 text-blue-600"><span>靜態展示</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="動態展示" class="setup-radio h-4 w-4 text-blue-600"><span>動態展示</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="義賣" class="setup-radio h-4 w-4 text-blue-600"><span>義賣</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="置放物品" class="setup-radio h-4 w-4 text-blue-600"><span>置放物品</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="海報" class="setup-radio h-4 w-4 text-blue-600"><span>海報</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="布條" class="setup-radio h-4 w-4 text-blue-600"><span>布條</span></label>
+                                <label class="flex items-center space-x-2"><input type="radio" name="setupStyle" value="立型站牌" class="setup-radio h-4 w-4 text-blue-600"><span>立型站牌</span></label>
+                                
+                                <label class="flex items-center space-x-1">
+                                    <input type="radio" name="setupStyle" value="其他" id="otherSetupRadio" class="setup-radio h-4 w-4 text-blue-600">
+                                    <span class="whitespace-nowrap">其他:</span>
+                                    <input type="text" id="otherSetupInput" name="otherSetupDetail" placeholder="請說明" class="custom-input input-text-style" disabled style="display:none;">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-6">
+                    
+                    <p class="section-title">活動地點</p>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">地點類別 <span class="text-red-500">*</span></label>
+                        <div class="flex flex-wrap gap-6 text-gray-700">
+                            <label class="flex items-center space-x-2"><input type="radio" name="locationType" value="室內" id="locTypeIndoorRadio" required class="location-type-radio h-4 w-4 text-blue-600"><span>室內</span></label>
+                            <label class="flex items-center space-x-2"><input type="radio" name="locationType" value="戶外" id="locTypeOutdoorRadio" class="location-type-radio h-4 w-4 text-blue-600"><span>戶外</span></label>
+                        </div>
+                    </div>
+
+                    <div id="locationDetailsContainer" class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">地點名稱 <span class="text-red-500">*</span></label>
+
+                        <div id="indoorLocations" class="hidden grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-4 border border-blue-200 rounded-md bg-blue-50">
+                            <div class="space-y-3">
+                                <label class="block">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="location" value="一樓大廳(醫療大樓)" class="location-radio h-4 w-4 text-blue-600">
+                                        <span>一樓大廳(第___醫療大樓)</span>
+                                    </div>
+                                    <input type="text" name="detail_input" data-location="一樓大廳(醫療大樓)" placeholder="請填寫大樓名稱" class="location-detail-input ml-6">
+                                </label>
+                                <label class="block">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="location" value="空橋(連接走廊)" class="location-radio h-4 w-4 text-blue-600">
+                                        <span>空橋(連接走廊)__樓__區</span>
+                                    </div>
+                                    <input type="text" name="detail_input" data-location="空橋(連接走廊)" placeholder="請填寫樓層/區位" class="location-detail-input ml-6">
+                                </label>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="location" value="大廳前廣場(室內)" class="location-radio h-4 w-4 text-blue-600">
+                                        <span>大廳前廣場</span>
+                                    </div>
+                                </label>
+                                <label class="block">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="location" value="大樓地下室" class="location-radio h-4 w-4 text-blue-600">
+                                        <span>____大樓地下室__樓__區</span>
+                                    </div>
+                                    <input type="text" name="detail_input" data-location="大樓地下室" placeholder="請填寫大樓名稱/樓層/區位" class="location-detail-input ml-6">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="outdoorLocations" class="hidden grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-4 border border-orange-200 rounded-md bg-orange-50">
+                            <div class="space-y-3">
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="公車停車場" class="location-radio h-4 w-4 text-blue-600"><span>公車停車場</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="殘障停車區" class="location-radio h-4 w-4 text-blue-600"><span>殘障停車區</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="公設道路側圍牆" class="location-radio h-4 w-4 text-blue-600"><span>公設道路側圍牆</span></div></label>
+                                
+                                <label class="block">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="radio" name="location" value="來賓停車場" class="location-radio h-4 w-4 text-blue-600">
+                                        <span>第___來賓停車場</span>
+                                    </div>
+                                    <input type="text" name="detail_input" data-location="來賓停車場" placeholder="請填寫停車場編號" class="location-detail-input ml-6">
+                                </label>
+                                
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="醫療大樓四周" class="location-radio h-4 w-4 text-blue-600"><span>醫療大樓四周</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="停車場四周" class="location-radio h-4 w-4 text-blue-600"><span>停車場四周</span></div></label>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="人行步道" class="location-radio h-4 w-4 text-blue-600"><span>人行步道</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="景觀走廊" class="location-radio h-4 w-4 text-blue-600"><span>景觀走廊</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="研究大樓前廣場" class="location-radio h-4 w-4 text-blue-600"><span>研究大樓前廣場</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="教學大樓前廣場" class="location-radio h-4 w-4 text-blue-600"><span>教學大樓前廣場</span></div></label>
+                                <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="二五天橋外平台" class="location-radio h-4 w-4 text-blue-600"><span>二五天橋外平台</span></div></label>
+                            </div>
+                        </div>
+                        <p id="locationPrompt" class="text-sm text-gray-500 mt-2">請先選擇地點類別 (室內或戶外)。</p>
+                    </div>
+                    
+                    <hr class="my-6">
+                    
+                    <p class="section-title">其他說明</p>
+                    <label for="remarks" class="block text-sm font-medium text-gray-700">備註</label>
+                    <textarea id="remarks" name="remarks" rows="3" placeholder="請在此填寫活動內容概要、器材需求、電力需求或其他特殊要求..." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style"></textarea>
+
+                    <div class="pt-6 text-center">
+                        <button type="submit" class="inline-flex justify-center py-3 px-12 border border-transparent shadow-lg text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                            送出申請
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="tab-content-search" class="tab-content hidden p-6 sm:p-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">查詢申請狀態</h2>
+                <div class="flex items-center space-x-2 mb-6">
+                    <input type="text" id="search-input" placeholder="請輸入申請人姓名或申請編號進行查詢..." class="flex-grow block w-full px-4 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 input-text-style">
+                    <button id="search-btn" class="py-2 px-6 border border-transparent shadow-sm text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700">查詢</button>
+                </div>
+                <div id="search-results" class="space-y-4 text-center py-8 bg-gray-50 rounded-lg">
+                    <p class="text-gray-500">輸入關鍵字後，申請記錄將顯示於此。</p>
+                </div>
+            </div>
+
+            <div id="tab-content-admin" class="tab-content hidden p-6 sm:p-8">
+                <div id="admin-login-prompt" class="text-center py-10 bg-gray-50 rounded-lg">
+                    <p class="text-gray-600 mb-4">此為管理員專區，請先登入。</p>
+                    <button id="admin-login-prompt-btn" class="mt-4 py-2 px-6 border border-transparent shadow-sm text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700">管理員登入</button>
+                </div>
+                <div id="admin-view" class="hidden">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                         <h2 class="text-xl font-bold text-gray-800">所有公共空間申請列表</h2>
+                         <button id="export-excel-btn" class="py-2 px-4 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 transition duration-150">匯出 Excel</button>
+                    </div>
+                    <div id="requests-list" class="space-y-4">
+                         <p class="text-center text-gray-500">登入後將載入待審核及已處理的申請單...</p>
+                         <div id="mock-data-table" class="hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">編號</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請人</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">活動名稱</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地點</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">狀態</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                                    <tr data-id="1">
+                                        <td class="px-6 py-4 whitespace-nowrap">CHM2023001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">陳小美</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">健康宣導活動</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">室內/一樓大廳</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">已通過</span></td>
+                                    </tr>
+                                    <tr data-id="2">
+                                        <td class="px-6 py-4 whitespace-nowrap">CHM2023002</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">林志明</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">聖誕佈置申請</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">戶外/教學大樓前廣場</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待審核</span></td>
+                                    </tr>
+                                    <tr data-id="3">
+                                        <td class="px-6 py-4 whitespace-nowrap">CHM2023003</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">王大華</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">愛心義賣會</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">室內/大樓地下室 B1</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">已駁回</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const otherSetupRadio = document.getElementById('otherSetupRadio');
+            const otherSetupInput = document.getElementById('otherSetupInput'); 
+            const adminLoginBtn = document.getElementById('admin-login-prompt-btn');
+            const adminLoginPrompt = document.getElementById('admin-login-prompt');
+            const adminView = document.getElementById('admin-view');
+            const exportExcelBtn = document.getElementById('export-excel-btn');
+            const mockDataTable = document.getElementById('mock-data-table');
+            
+            // 地點相關元素
+            const locTypeRadios = document.querySelectorAll('.location-type-radio');
+            const indoorLocationsDiv = document.getElementById('indoorLocations');
+            const outdoorLocationsDiv = document.getElementById('outdoorLocations');
+            const locationRadios = document.querySelectorAll('.location-radio');
+            const detailInputs = document.querySelectorAll('.location-detail-input');
+            const locationPrompt = document.getElementById('locationPrompt');
+
+            // --- 頁籤切換邏輯 ---
+            function switchTab(targetTab) {
+                tabLinks.forEach(link => {
+                    const isActive = link.getAttribute('data-tab') === targetTab;
+                    link.classList.toggle('active', isActive);
+                    link.classList.toggle('font-bold', isActive);
+                });
+                tabContents.forEach(content => {
+                    content.classList.toggle('hidden', content.id !== \`tab-content-\${targetTab}\`);
+                });
+            }
+            switchTab('apply'); 
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchTab(link.getAttribute('data-tab'));
+                });
+            });
+
+            // --- 放置樣式 - 「其他」欄位互動 ---
+            document.querySelectorAll('input[name="setupStyle"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const isOther = otherSetupRadio.checked;
+                    otherSetupInput.style.display = isOther ? 'inline-block' : 'none';
+                    otherSetupInput.disabled = !isOther;
+                    otherSetupInput.required = isOther;
+                    if (!isOther) {
+                         otherSetupInput.value = ''; 
+                    }
+                });
+            });
+
+            // --- 地點類別 / 細項地點選擇邏輯 ---
+            locTypeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const selectedType = e.target.value;
+                    locationRadios.forEach(r => {
+                        r.checked = false;
+                        r.required = false; 
+                    });
+                    detailInputs.forEach(input => {
+                        input.style.display = 'none';
+                        input.required = false;
+                        input.value = '';
+                    });
+                    indoorLocationsDiv.classList.add('hidden');
+                    outdoorLocationsDiv.classList.add('hidden');
+                    locationPrompt.classList.add('hidden');
+
+                    if (selectedType === '室內') {
+                        indoorLocationsDiv.classList.remove('hidden');
+                        indoorLocationsDiv.querySelectorAll('input[name="location"]').forEach(r => r.required = true); 
+                    } else if (selectedType === '戶外') {
+                        outdoorLocationsDiv.classList.remove('hidden');
+                        outdoorLocationsDiv.querySelectorAll('input[name="location"]').forEach(r => r.required = true);
+                    }
+                });
+            });
+
+            locationRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    detailInputs.forEach(input => {
+                        input.style.display = 'none';
+                        input.required = false;
+                    });
+                    const parentLabel = e.target.closest('label');
+                    const detailInput = parentLabel ? parentLabel.querySelector('.location-detail-input') : null;
+                    
+                    if (detailInput) {
+                        detailInput.style.display = 'block';
+                        detailInput.required = true;
+                        detailInput.focus();
+                    }
+                });
+            });
+
+
+            // --- 管理員登入邏輯 ---
+            adminLoginBtn.addEventListener('click', () => {
+                const username = prompt("請輸入帳號:");
+                const password = prompt("請輸入密碼:");
+
+                if (username === 'admin' && password === 'cch2500') {
+                    alert("管理員登入成功！");
+                    adminLoginPrompt.classList.add('hidden');
+                    adminView.classList.remove('hidden');
+                    document.getElementById('requests-list').innerHTML = '';
+                    mockDataTable.classList.remove('hidden'); 
+                } else {
+                    alert("帳號或密碼錯誤。請使用預設帳號: admin, 密碼: cch2500");
+                }
+            });
+
+            // --- 核心功能: Excel 匯出模擬函數 ---
+            function handleExportToExcel() {
+                // 1. 抓取模擬的數據
+                const rows = mockDataTable.querySelectorAll('tbody tr');
+                
+                let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // \uFEFF 是 BOM，確保中文在 Excel 中不會亂碼
+                
+                // 2. 加入標題行
+                const header = ["編號", "申請人", "活動名稱", "地點", "狀態"];
+                csvContent += header.join(",") + "\n";
+                
+                // 3. 抓取並格式化數據行
+                rows.forEach(row => {
+                    const columns = row.querySelectorAll('td');
+                    const rowData = [
+                        columns[0].innerText,
+                        columns[1].innerText,
+                        columns[2].innerText,
+                        columns[3].innerText,
+                        columns[4].innerText.trim()
+                    ];
+                    csvContent += rowData.join(",") + "\n";
+                });
+
+                // 4. 建立下載連結並模擬點擊
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "公共空間申請列表_" + new Date().toISOString().slice(0, 10) + ".csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                alert("申請列表數據已匯出為 CSV 檔案！");
+            }
+            
+            // 綁定匯出按鈕事件
+            exportExcelBtn.addEventListener('click', handleExportToExcel);
+            // --- Excel 匯出模擬函數結束 ---
+
+
+            // --- 表單提交模擬 ---
+            document.getElementById('rentalForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('申請單已提交成功！ (實際功能需後端/數據庫支持)');
+                e.target.reset(); 
+                
+                indoorLocationsDiv.classList.add('hidden');
+                outdoorLocationsDiv.classList.add('hidden');
+                locationPrompt.classList.remove('hidden');
+                otherSetupInput.style.display = 'none'; 
+            });
+
+            document.getElementById('search-btn').addEventListener('click', () => {
+                const query = document.getElementById('search-input').value;
+                if (query) {
+                    document.getElementById('search-results').innerHTML = `<p class="font-semibold text-blue-600">正在查詢 ${query} 的申請單...</p><p class="text-gray-500 mt-2">（此為模擬結果，實際狀態需連結後端）</p>`;
+                } else {
+                     document.getElementById('search-results').innerHTML = `<p class="text-red-500">請輸入申請人姓名或申請編號。</p>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
