@@ -9,7 +9,7 @@
     <style>
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
         
-        /* 表單區塊標題樣式 (使用 class 或其他標籤取代 ##) */
+        /* 區塊標題樣式 */
         .section-title {
             position: relative; font-size: 1.125rem; font-weight: 600; color: #1f2937; padding-left: 1.5rem; margin-bottom: 1rem; margin-top: 1.5rem;
         }
@@ -159,7 +159,7 @@
                     </div>
 
                     <div id="locationDetailsContainer" class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">地點名稱 <span class="text-red-500">*</span></label>
+                        <label id="locationNameLabel" class="block text-sm font-medium text-gray-700 mb-2 hidden">地點名稱 <span class="text-red-500">*</span></label>
 
                         <div id="indoorLocations" class="hidden grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-4 border border-blue-200 rounded-md bg-blue-50">
                             <div class="space-y-3">
@@ -181,7 +181,7 @@
                             <div class="space-y-3">
                                 <label class="block">
                                     <div class="flex items-center space-x-2">
-                                        <input type="radio" name="location" value="大廳前廣場(室內)" class="location-radio h-4 w-4 text-blue-600">
+                                        <input type="radio" name="location" value="大廳前廣場" class="location-radio h-4 w-4 text-blue-600">
                                         <span>大廳前廣場</span>
                                     </div>
                                 </label>
@@ -211,8 +211,6 @@
                                 
                                 <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="醫療大樓四周" class="location-radio h-4 w-4 text-blue-600"><span>醫療大樓四周</span></div></label>
                                 <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="停車場四周" class="location-radio h-4 w-4 text-blue-600"><span>停車場四周</span></div></label>
-                            </div>
-                            <div class="space-y-3">
                                 <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="人行步道" class="location-radio h-4 w-4 text-blue-600"><span>人行步道</span></div></label>
                                 <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="景觀走廊" class="location-radio h-4 w-4 text-blue-600"><span>景觀走廊</span></div></label>
                                 <label class="block"><div class="flex items-center space-x-2"><input type="radio" name="location" value="研究大樓前廣場" class="location-radio h-4 w-4 text-blue-600"><span>研究大樓前廣場</span></div></label>
@@ -321,6 +319,8 @@
             const locationRadios = document.querySelectorAll('.location-radio');
             const detailInputs = document.querySelectorAll('.location-detail-input');
             const locationPrompt = document.getElementById('locationPrompt');
+            const locationNameLabel = document.getElementById('locationNameLabel');
+
 
             // --- 頁籤切換邏輯 ---
             function switchTab(targetTab) {
@@ -345,19 +345,25 @@
             document.querySelectorAll('input[name="setupStyle"]').forEach(radio => {
                 radio.addEventListener('change', () => {
                     const isOther = otherSetupRadio.checked;
+                    
                     otherSetupInput.style.display = isOther ? 'inline-block' : 'none';
                     otherSetupInput.disabled = !isOther;
                     otherSetupInput.required = isOther;
+                    
                     if (!isOther) {
                          otherSetupInput.value = ''; 
+                    } else {
+                         otherSetupInput.focus(); 
                     }
                 });
             });
 
-            // --- 地點類別 / 細項地點選擇邏輯 ---
+            // --- 地點類別 / 細項地點選擇邏輯 (必填連動) ---
             locTypeRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     const selectedType = e.target.value;
+                    
+                    // 1. 重置所有細項地點的選擇狀態和必填狀態
                     locationRadios.forEach(r => {
                         r.checked = false;
                         r.required = false; 
@@ -367,26 +373,33 @@
                         input.required = false;
                         input.value = '';
                     });
+                    
+                    // 2. 隱藏/顯示容器
                     indoorLocationsDiv.classList.add('hidden');
                     outdoorLocationsDiv.classList.add('hidden');
                     locationPrompt.classList.add('hidden');
+                    locationNameLabel.classList.remove('hidden'); 
 
+                    // 3. 根據選擇顯示對應的細項列表，並設定列表內的任一選項為必選
                     if (selectedType === '室內') {
                         indoorLocationsDiv.classList.remove('hidden');
-                        indoorLocationsDiv.querySelectorAll('input[name="location"]').forEach(r => r.required = true); 
+                        document.querySelectorAll('#indoorLocations input[name="location"]').forEach(r => r.required = true); 
                     } else if (selectedType === '戶外') {
                         outdoorLocationsDiv.classList.remove('hidden');
-                        outdoorLocationsDiv.querySelectorAll('input[name="location"]').forEach(r => r.required = true);
+                        document.querySelectorAll('#outdoorLocations input[name="location"]').forEach(r => r.required = true);
                     }
                 });
             });
 
             locationRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {
+                    // 清除並隱藏所有細節輸入框
                     detailInputs.forEach(input => {
                         input.style.display = 'none';
                         input.required = false;
                     });
+                    
+                    // 檢查當前選中的選項是否有細節輸入框需要顯示
                     const parentLabel = e.target.closest('label');
                     const detailInput = parentLabel ? parentLabel.querySelector('.location-detail-input') : null;
                     
@@ -399,7 +412,7 @@
             });
 
 
-            // --- 管理員登入邏輯 ---
+            // --- 管理員登入邏輯 (模擬) ---
             adminLoginBtn.addEventListener('click', () => {
                 const username = prompt("請輸入帳號:");
                 const password = prompt("請輸入密碼:");
@@ -415,18 +428,13 @@
                 }
             });
 
-            // --- 核心功能: Excel 匯出模擬函數 ---
+            // --- Excel 匯出模擬函數 ---
             function handleExportToExcel() {
-                // 1. 抓取模擬的數據
                 const rows = mockDataTable.querySelectorAll('tbody tr');
-                
-                let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // \uFEFF 是 BOM，確保中文在 Excel 中不會亂碼
-                
-                // 2. 加入標題行
+                let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
                 const header = ["編號", "申請人", "活動名稱", "地點", "狀態"];
                 csvContent += header.join(",") + "\n";
                 
-                // 3. 抓取並格式化數據行
                 rows.forEach(row => {
                     const columns = row.querySelectorAll('td');
                     const rowData = [
@@ -439,7 +447,6 @@
                     csvContent += rowData.join(",") + "\n";
                 });
 
-                // 4. 建立下載連結並模擬點擊
                 const encodedUri = encodeURI(csvContent);
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
@@ -451,7 +458,6 @@
                 alert("申請列表數據已匯出為 CSV 檔案！");
             }
             
-            // 綁定匯出按鈕事件
             exportExcelBtn.addEventListener('click', handleExportToExcel);
             // --- Excel 匯出模擬函數結束 ---
 
@@ -462,10 +468,13 @@
                 alert('申請單已提交成功！ (實際功能需後端/數據庫支持)');
                 e.target.reset(); 
                 
+                // 重置狀態
                 indoorLocationsDiv.classList.add('hidden');
                 outdoorLocationsDiv.classList.add('hidden');
                 locationPrompt.classList.remove('hidden');
+                locationNameLabel.classList.add('hidden');
                 otherSetupInput.style.display = 'none'; 
+                otherSetupInput.disabled = true;
             });
 
             document.getElementById('search-btn').addEventListener('click', () => {
